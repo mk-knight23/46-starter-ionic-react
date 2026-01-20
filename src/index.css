@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply antialiased bg-slate-950 text-white overflow-x-hidden;
+}
+
+.hybrid-card {
+    @apply bg-slate-900/50 backdrop-blur-xl border border-white/5 rounded-3xl;
+}
