@@ -35,8 +35,8 @@ npm run dev
 
 ## 🌐 Live Deployments
 
-- Vercel: https://20-ionic-react-playground.vercel.app
-- GitHub Pages: https://mk-knight23.github.io/20-ionic-react-playground/
+- **Frontend Demo (Vercel)**: https://20-ionic-react-playground.vercel.app
+- **GitHub Repository**: https://github.com/mk-knight23/20-ionic-react-playground
 
-Status: 🟢 Deployments Live  
-Last Updated: 2026-01-23
+Status: 🟢 Frontend Deployed  
+Last Updated: 2026-01-29
