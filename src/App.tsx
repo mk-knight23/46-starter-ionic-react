@@ -1,239 +1,330 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Home, Search, Plus, Heart, MessageCircle, User, MoreHorizontal, Send, Bookmark, Share2, Smile, Camera, MapPin, AtSign, Image, Video } from 'lucide-react';
+import { IonApp, IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonAvatar, IonItem, IonBadge, IonList, IonListHeader } from '@ionic/react';
+import { IonReactRouter } from '@ionic/react-router';
+import { Route } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { Home, Search, Plus, Heart, MessageCircle, User, MoreHorizontal, Send, Bookmark } from 'lucide-react';
+import { useHaptics } from './hooks/useHaptics';
+import '@ionic/react/css/core.css';
+import '@ionic/react/css/normalize.css';
+import '@ionic/react/css/structure.css';
+import '@ionic/react/css/typography.css';
+import '@ionic/react/css/padding.css';
+import '@ionic/react/css/float-elements.css';
+import '@ionic/react/css/text-alignment.css';
+import '@ionic/react/css/text-transformation.css';
+import '@ionic/react/css/flex-utils.css';
+import '@ionic/react/css/display.css';
 
 const STORIES = [
-    { id: 1, name: 'You', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces', hasStory: false },
-    { id: 2, name: 'Sarah', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces', hasStory: true },
-    { id: 3, name: 'Mike', avatar: 'https://imagesphoto-1507003211169-0a1dd7228f2d?w=.unsplash.com/100&h=100&fit=crop&crop=faces', hasStory: true },
-    { id: 4, name: 'Emma', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces', hasStory: true },
-    { id: 5, name: 'James', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces', hasStory: true },
-    { id: 6, name: 'Olivia', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces', hasStory: true },
+  { id: 1, name: 'You', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces', hasStory: false },
+  { id: 2, name: 'Sarah', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces', hasStory: true },
+  { id: 3, name: 'Mike', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces', hasStory: true },
+  { id: 4, name: 'Emma', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces', hasStory: true },
+  { id: 5, name: 'James', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces', hasStory: true },
+  { id: 6, name: 'Olivia', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces', hasStory: true },
 ];
 
 const POSTS = [
-    {
-        id: 1,
-        user: { name: 'Sarah Chen', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces', handle: '@sarahc' },
-        image: 'https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800&h=800&fit=crop',
-        caption: 'Exploring the beautiful coastline this weekend! 🏖️ The weather was absolutely perfect. Can\'t wait to go back!',
-        likes: 234,
-        comments: 18,
-        time: '2h',
-        liked: false,
-        bookmarked: false,
-    },
-    {
-        id: 2,
-        user: { name: 'Mike Johnson', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces', handle: '@mikej' },
-        image: 'https://images.unsplash.com/photo-1682687220198-88e9bdea9931?w=800&h=800&fit=crop',
-        caption: 'New setup is finally complete! 🚀 Every developer\'s dream workspace.',
-        likes: 892,
-        comments: 45,
-        time: '5h',
-        liked: true,
-        bookmarked: true,
-    },
-    {
-        id: 3,
-        user: { name: 'Emma Wilson', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces', handle: '@emmaw' },
-        image: 'https://images.unsplash.com/photo-1682686581854-5e71f58e7e3f?w=800&h=800&fit=crop',
-        caption: 'Sunrise hikes are the best way to start a morning. Who else is an early bird? 🌅',
-        likes: 567,
-        comments: 32,
-        time: '8h',
-        liked: false,
-        bookmarked: false,
-    },
+  {
+    id: 1,
+    user: { name: 'Sarah Chen', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces', handle: '@sarahc' },
+    image: 'https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800&h=800&fit=crop',
+    caption: 'Exploring the beautiful coastline this weekend! The weather was absolutely perfect.',
+    likes: 234,
+    comments: 18,
+    time: '2h',
+  },
+  {
+    id: 2,
+    user: { name: 'Mike Johnson', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces', handle: '@mikej' },
+    image: 'https://images.unsplash.com/photo-1682687220198-88e9bdea9931?w=800&h=800&fit=crop',
+    caption: 'New setup is finally complete! Every developer\'s dream workspace.',
+    likes: 892,
+    comments: 45,
+    time: '5h',
+  },
 ];
 
-const SUGGESTED_USERS = [
-    { name: 'Alex Rivera', handle: '@alexr', reason: 'Followed by Sarah' },
-    { name: 'Lisa Park', handle: '@lisap', reason: 'New to explore' },
-    { name: 'David Kim', handle: '@davidk', reason: 'Popular in your area' },
-];
-
-function App() {
-    const [activeTab, setActiveTab] = useState('home');
-    const [likedPosts, setLikedPosts] = useState<Record<number, boolean>>({});
-    const [bookmarkedPosts, setBookmarkedPosts] = useState<Record<number, boolean>>({});
-
-    const toggleLike = (postId: number) => {
-        setLikedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
-    };
-
-    const toggleBookmark = (postId: number) => {
-        setBookmarkedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
-    };
-
-    return (
-        <div className="app-container">
-            {/* Status Bar Spacer */}
-            <div className="h-12 bg-white" />
-
-            {/* Header */}
-            <header className="app-header">
-                <div className="px-4 py-3 flex items-center justify-between">
-                    <h1 className="text-xl font-bold text-[#1c1c1e]">SocialApp</h1>
-                    <div className="flex items-center gap-4">
-                        <button className="p-2 hover:bg-[#f2f2f7] rounded-full transition-colors">
-                            <Heart className="w-6 h-6 text-[#ff3b30]" />
-                        </button>
-                        <button className="p-2 hover:bg-[#f2f2f7] rounded-full transition-colors relative">
-                            <MessageCircle className="w-6 h-6 text-[#1c1c1e]" />
-                            <span className="absolute top-1 right-0 w-2 h-2 bg-[#ff3b30] rounded-full" />
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            {/* Main Content */}
-            <main className="pb-24">
-                {/* Search Bar */}
-                <div className="px-4 py-3">
-                    <div className="app-search-bar">
-                        <Search className="w-5 h-5 text-[#8e8e93]" />
-                        <span className="text-[#8e8e93] text-base">Search</span>
-                    </div>
-                </div>
-
-                {/* Stories */}
-                <div className="flex items-center gap-4 px-4 py-3 overflow-x-auto scrollbar-hide">
-                    {STORIES.map((story) => (
-                        <div key={story.id} className="flex flex-col items-center gap-1 min-w-fit">
-                            <div className={`${story.hasStory ? 'app-story-ring' : ''}`}>
-                                <div className={`${story.hasStory ? 'app-story-inner' : ''}`}>
-                                    <img
-                                        src={story.avatar}
-                                        alt={story.name}
-                                        className={`${story.hasStory ? 'w-16 h-16' : 'w-14 h-14'} rounded-full object-cover`}
-                                    />
-                                </div>
-                            </div>
-                            <span className="text-xs text-[#8e8e93] truncate w-16 text-center">{story.name}</span>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Feed */}
-                <div className="px-4">
-                    {POSTS.map((post) => (
-                        <motion.article
-                            key={post.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="app-feed-item"
-                        >
-                            {/* Post Header */}
-                            <div className="app-feed-header">
-                                <div className="flex items-center gap-3">
-                                    <img src={post.user.avatar} alt={post.user.name} className="app-feed-avatar" />
-                                    <div>
-                                        <p className="text-sm font-semibold text-[#1c1c1e]">{post.user.name}</p>
-                                        <p className="text-xs text-[#8e8e93]">{post.time}</p>
-                                    </div>
-                                </div>
-                                <button className="p-2 hover:bg-[#f2f2f7] rounded-full transition-colors">
-                                    <MoreHorizontal className="w-5 h-5 text-[#8e8e93]" />
-                                </button>
-                            </div>
-
-                            {/* Post Image */}
-                            <img src={post.image} alt="Post content" className="app-feed-image" onDoubleClick={() => toggleLike(post.id)} />
-
-                            {/* Post Actions */}
-                            <div className="app-feed-actions">
-                                <button
-                                    onClick={() => toggleLike(post.id)}
-                                    className={`app-action-button ${likedPosts[post.id] ? 'text-[#ff3b30]' : ''}`}
-                                >
-                                    <Heart className={`w-6 h-6 ${likedPosts[post.id] ? 'fill-current' : ''}`} />
-                                </button>
-                                <button className="app-action-button">
-                                    <MessageCircle className="w-6 h-6" />
-                                </button>
-                                <button className="app-action-button">
-                                    <Send className="w-6 h-6" />
-                                </button>
-                                <div className="flex-1" />
-                                <button
-                                    onClick={() => toggleBookmark(post.id)}
-                                    className={`app-action-button ${bookmarkedPosts[post.id] ? 'text-[#007aff]' : ''}`}
-                                >
-                                    <Bookmark className={`w-6 h-6 ${bookmarkedPosts[post.id] ? 'fill-current' : ''}`} />
-                                </button>
-                            </div>
-
-                            {/* Likes Count */}
-                            <div className="px-4 pb-2">
-                                <p className="text-sm font-semibold text-[#1c1c1e]">{likedPosts[post.id] ? post.likes + 1 : post.likes} likes</p>
-                            </div>
-
-                            {/* Caption */}
-                            <div className="app-feed-content">
-                                <p className="text-sm">
-                                    <span className="font-semibold text-[#1c1c1e]">{post.user.name}</span>
-                                    <span className="text-[#1c1c1e] ml-2">{post.caption}</span>
-                                </p>
-                                <button className="text-[#8e8e93] text-sm mt-1">View all {post.comments} comments</button>
-                            </div>
-                        </motion.article>
-                    ))}
-                </div>
-
-                {/* Suggested Users */}
-                <div className="px-4 py-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-bold text-[#1c1c1e]">Suggested for You</h2>
-                        <button className="text-sm text-[#007aff] font-semibold">See All</button>
-                    </div>
-                    <div className="flex gap-4 overflow-x-auto">
-                        {SUGGESTED_USERS.map((user) => (
-                            <div key={user.name} className="flex flex-col items-center gap-2 min-w-fit">
-                                <img
-                                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
-                                    alt={user.name}
-                                    className="w-20 h-20 rounded-full bg-[#f2f2f7]"
-                                />
-                                <p className="text-sm font-semibold text-[#1c1c1e]">{user.name}</p>
-                                <p className="text-xs text-[#8e8e93]">{user.reason}</p>
-                                <button className="app-button-primary text-xs px-4 py-2">Follow</button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </main>
-
-            {/* Bottom Navigation */}
-            <nav className="app-nav-bar">
-                <div className="flex items-center justify-around h-16">
-                    <button
-                        onClick={() => setActiveTab('home')}
-                        className={`app-nav-item ${activeTab === 'home' ? 'app-nav-item-active' : ''}`}
-                    >
-                        <Home className="w-6 h-6" />
-                        <span>Home</span>
-                    </button>
-                    <button className="app-nav-item">
-                        <Search className="w-6 h-6" />
-                        <span>Discover</span>
-                    </button>
-                    <button className="app-nav-item">
-                        <Plus className="w-6 h-6" />
-                        <span>Post</span>
-                    </button>
-                    <button className="app-nav-item">
-                        <Heart className="w-6 h-6" />
-                        <span>Activity</span>
-                    </button>
-                    <button className="app-nav-item">
-                        <User className="w-6 h-6" />
-                        <span>Profile</span>
-                    </button>
-                </div>
-            </nav>
+const StoriesSection: React.FC = () => (
+  <div className="flex items-center gap-4 px-4 py-3 overflow-x-auto">
+    {STORIES.map((story) => (
+      <div key={story.id} className="flex flex-col items-center gap-1 min-w-fit cursor-pointer">
+        <div className={`${story.hasStory ? 'app-story-ring' : ''}`}>
+          <div className={`${story.hasStory ? 'app-story-inner' : ''}`}>
+            <IonAvatar className={`${story.hasStory ? 'w-16 h-16' : 'w-14 h-14'}`}>
+              <img src={story.avatar} alt={story.name} className="object-cover" />
+            </IonAvatar>
+          </div>
         </div>
-    );
-}
+        <span className="text-xs text-[#8e8e93] truncate w-16 text-center">{story.name}</span>
+      </div>
+    ))}
+  </div>
+);
+
+const PostCard: React.FC<{ post: typeof POSTS[0] }> = ({ post }) => {
+  const [liked, setLiked] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+
+  return (
+    <IonCard className="mb-4 mx-0">
+      <IonCardHeader className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <IonAvatar className="w-10 h-10">
+            <img src={post.user.avatar} alt={post.user.name} />
+          </IonAvatar>
+          <div>
+            <IonCardTitle className="text-sm">{post.user.name}</IonCardTitle>
+            <IonCardSubtitle className="text-xs">{post.time}</IonCardSubtitle>
+          </div>
+        </div>
+        <IonButton fill="clear" size="small">
+          <IonIcon slot="icon-only" icon={MoreHorizontal} />
+        </IonButton>
+      </IonCardHeader>
+
+      <img
+        src={post.image}
+        alt="Post content"
+        className="w-full h-64 object-cover"
+        onDoubleClick={() => setLiked(!liked)}
+      />
+
+      <IonCardContent>
+        <div className="flex items-center gap-4 mb-2">
+          <IonButton fill="clear" onClick={() => setLiked(!liked)}>
+            <IonIcon slot="icon-only" icon={Heart} className={liked ? 'text-[#ff3b30] fill-current' : ''} />
+          </IonButton>
+          <IonButton fill="clear">
+            <IonIcon slot="icon-only" icon={MessageCircle} />
+          </IonButton>
+          <IonButton fill="clear">
+            <IonIcon slot="icon-only" icon={Send} />
+          </IonButton>
+          <div style={{ flex: 1 }} />
+          <IonButton fill="clear" onClick={() => setBookmarked(!bookmarked)}>
+            <IonIcon slot="icon-only" icon={Bookmark} className={bookmarked ? 'text-[#007aff] fill-current' : ''} />
+          </IonButton>
+        </div>
+
+        <p className="text-sm font-semibold mb-1">{liked ? post.likes + 1 : post.likes} likes</p>
+        <p className="text-sm">
+          <span className="font-semibold">{post.user.name}</span>
+          <span className="ml-2">{post.caption}</span>
+        </p>
+        <button className="text-[#8e8e93] text-sm mt-2">View all {post.comments} comments</button>
+      </IonCardContent>
+    </IonCard>
+  );
+};
+
+const HomePage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  const [likedPosts, setLikedPosts] = useState<Record<number, boolean>>({});
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<Record<number, boolean>>({});
+
+  const toggleLike = (postId: number) => {
+    setLikedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
+  };
+
+  const toggleBookmark = (postId: number) => {
+    setBookmarkedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
+  };
+
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>SocialApp</IonTitle>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon slot="icon-only" icon={Heart} className="text-[#ff3b30]" />
+            </IonButton>
+            <IonButton>
+              <IonIcon slot="icon-only" icon={MessageCircle}>
+                <IonBadge color="danger" style={{ position: 'absolute', top: '4px', right: '4px', width: '8px', height: '8px', padding: 0 }}></IonBadge>
+              </IonIcon>
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+
+      <IonContent>
+        <div className="px-4 py-3">
+          <IonItem className="app-search-bar rounded-full" lines="none">
+            <IonIcon slot="start" icon={Search} className="text-[#8e8e93]" />
+            <IonLabel className="text-[#8e8e93]">Search</IonLabel>
+          </IonItem>
+        </div>
+
+        <StoriesSection />
+
+        <div className="px-4">
+          {POSTS.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
+
+        <div className="px-4 py-6">
+          <h2 className="text-lg font-bold mb-4">Suggested for You</h2>
+        </div>
+      </IonContent>
+    </IonPage>
+  );
+};
+
+const SearchPage: React.FC = () => (
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonTitle>Discover</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent className="ion-padding">
+      <h2>Explore</h2>
+      <p>Discover new content and trends</p>
+    </IonContent>
+  </IonPage>
+);
+
+const CreatePage: React.FC = () => {
+  const { triggerClick, triggerToggle, triggerSuccess, triggerWarning, triggerError, isNative } = useHaptics();
+
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Create Post</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent className="ion-padding">
+        <h2 className="mb-4">Haptics Demo</h2>
+        <p className="mb-4 text-[#8e8e93]">
+          {isNative ? 'Native haptics enabled' : 'Web haptics (vibration API)'}
+        </p>
+
+        <IonList>
+          <IonListHeader>
+            <IonLabel>Impact Styles</IonLabel>
+          </IonListHeader>
+          <IonItem button onClick={() => triggerClick()}>
+            <IonLabel>Light Impact (Tap)</IonLabel>
+            <IonIcon slot="end" icon={Vibrator} />
+          </IonItem>
+          <IonItem button onClick={() => triggerToggle()}>
+            <IonLabel>Medium Impact (Toggle)</IonLabel>
+            <IonIcon slot="end" icon={Vibrator} />
+          </IonItem>
+
+          <IonListHeader className="mt-4">
+            <IonLabel>Notifications</IonLabel>
+          </IonListHeader>
+          <IonItem button onClick={() => triggerSuccess()}>
+            <IonLabel>Success Vibration</IonLabel>
+            <IonIcon slot="end" icon={Vibrator} className="text-[#34c759]" />
+          </IonItem>
+          <IonItem button onClick={() => triggerWarning()}>
+            <IonLabel>Warning Vibration</IonLabel>
+            <IonIcon slot="end" icon={Vibrator} className="text-[#ff9500]" />
+          </IonItem>
+          <IonItem button onClick={() => triggerError()}>
+            <IonLabel>Error Vibration</IonLabel>
+            <IonIcon slot="end" icon={Vibrator} className="text-[#ff3b30]" />
+          </IonItem>
+        </IonList>
+
+        <div className="mt-6 p-4 bg-[#f2f2f7] rounded-lg">
+          <h3 className="font-semibold mb-2">About Haptics</h3>
+          <p className="text-sm text-[#8e8e93]">
+            Haptic feedback enhances user experience by providing tactile responses to interactions.
+            This demo works on both native devices and modern browsers with vibration API support.
+          </p>
+        </div>
+      </IonContent>
+    </IonPage>
+  );
+};
+
+const NotificationsPage: React.FC = () => (
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonTitle>Activity</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent className="ion-padding">
+      <h2>Notifications</h2>
+      <p>See who's interacting with your content</p>
+    </IonContent>
+  </IonPage>
+);
+
+const ProfilePage: React.FC = () => (
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonTitle>Profile</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent className="ion-padding">
+      <h2>My Profile</h2>
+      <p>Manage your account and settings</p>
+    </IonContent>
+  </IonPage>
+);
+
+const App: React.FC = () => {
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/home">
+              <HomePage />
+            </Route>
+            <Route exact path="/search">
+              <SearchPage />
+            </Route>
+            <Route exact path="/create">
+              <CreatePage />
+            </Route>
+            <Route exact path="/notifications">
+              <NotificationsPage />
+            </Route>
+            <Route exact path="/profile">
+              <ProfilePage />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom" className="pb-safe">
+            <IonTabButton tab="home" href="/home">
+              <IonIcon icon={Home} />
+              <IonLabel>Home</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="search" href="/search">
+              <IonIcon icon={Search} />
+              <IonLabel>Discover</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="create" href="/create">
+              <IonIcon icon={Plus} />
+              <IonLabel>Post</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="notifications" href="/notifications">
+              <IonIcon icon={Heart} />
+              <IonLabel>Activity</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="profile" href="/profile">
+              <IonIcon icon={User} />
+              <IonLabel>Profile</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  );
+};
 
 export default App;
