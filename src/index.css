@@ -94,6 +94,11 @@
 }
 
 /* iOS-style safe area insets */
+.ios-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: constant(safe-area-inset-bottom);
+}
+
 .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
 }
@@ -120,7 +125,9 @@
     }
 
     .app-nav-bar {
-        @apply fixed bottom-0 left-0 right-0 bg-white border-t border-[#e5e5ea] pb-safe;
+        @apply fixed bottom-0 left-0 right-0 bg-white border-t border-[#e5e5ea];
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-bottom: constant(safe-area-inset-bottom);
     }
 
     .app-nav-item {

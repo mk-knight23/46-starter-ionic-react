@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { IonApp, IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonAvatar, IonItem, IonBadge, IonList, IonListHeader } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Route } from 'react-router-dom';
-import { Navigate } from 'react-router-dom';
-import { Home, Search, Plus, Heart, MessageCircle, User, MoreHorizontal, Send, Bookmark } from 'lucide-react';
+import { Route, Redirect } from 'react-router-dom';
+import { Home, Search, Plus, Heart, MessageCircle, User, MoreHorizontal, Send, Bookmark, Waves } from 'lucide-react';
 import { useHaptics } from './hooks/useHaptics';
 import '@ionic/react/css/core.css';
 import '@ionic/react/css/normalize.css';
@@ -15,6 +14,13 @@ import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
+
+// Icon wrapper to use Lucide icons with Ionic
+const LucideIcon = ({ Icon, className }: { Icon: React.ComponentType<{ className?: string }>, className?: string }) => (
+  <span className={`ion-icon-wrapper ${className || ''}`}>
+    <Icon className={className} />
+  </span>
+);
 
 const STORIES = [
   { id: 1, name: 'You', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces', hasStory: false },
@@ -80,7 +86,9 @@ const PostCard: React.FC<{ post: typeof POSTS[0] }> = ({ post }) => {
           </div>
         </div>
         <IonButton fill="clear" size="small">
-          <IonIcon slot="icon-only" icon={MoreHorizontal} />
+          <div slot="icon-only">
+            <MoreHorizontal className="w-6 h-6" />
+          </div>
         </IonButton>
       </IonCardHeader>
 
@@ -94,17 +102,25 @@ const PostCard: React.FC<{ post: typeof POSTS[0] }> = ({ post }) => {
       <IonCardContent>
         <div className="flex items-center gap-4 mb-2">
           <IonButton fill="clear" onClick={() => setLiked(!liked)}>
-            <IonIcon slot="icon-only" icon={Heart} className={liked ? 'text-[#ff3b30] fill-current' : ''} />
+            <div slot="icon-only">
+              <Heart className={`w-6 h-6 ${liked ? 'text-[#ff3b30] fill-current' : ''}`} />
+            </div>
           </IonButton>
           <IonButton fill="clear">
-            <IonIcon slot="icon-only" icon={MessageCircle} />
+            <div slot="icon-only">
+              <MessageCircle className="w-6 h-6" />
+            </div>
           </IonButton>
           <IonButton fill="clear">
-            <IonIcon slot="icon-only" icon={Send} />
+            <div slot="icon-only">
+              <Send className="w-6 h-6" />
+            </div>
           </IonButton>
           <div style={{ flex: 1 }} />
           <IonButton fill="clear" onClick={() => setBookmarked(!bookmarked)}>
-            <IonIcon slot="icon-only" icon={Bookmark} className={bookmarked ? 'text-[#007aff] fill-current' : ''} />
+            <div slot="icon-only">
+              <Bookmark className={`w-6 h-6 ${bookmarked ? 'text-[#007aff] fill-current' : ''}`} />
+            </div>
           </IonButton>
         </div>
 
@@ -139,12 +155,15 @@ const HomePage: React.FC = () => {
           <IonTitle>SocialApp</IonTitle>
           <IonButtons slot="end">
             <IonButton>
-              <IonIcon slot="icon-only" icon={Heart} className="text-[#ff3b30]" />
+              <div slot="icon-only">
+                <Heart className="w-6 h-6 text-[#ff3b30]" />
+              </div>
             </IonButton>
             <IonButton>
-              <IonIcon slot="icon-only" icon={MessageCircle}>
+              <div slot="icon-only" style={{ position: 'relative' }}>
+                <MessageCircle className="w-6 h-6" />
                 <IonBadge color="danger" style={{ position: 'absolute', top: '4px', right: '4px', width: '8px', height: '8px', padding: 0 }}></IonBadge>
-              </IonIcon>
+              </div>
             </IonButton>
           </IonButtons>
         </IonToolbar>
@@ -153,7 +172,9 @@ const HomePage: React.FC = () => {
       <IonContent>
         <div className="px-4 py-3">
           <IonItem className="app-search-bar rounded-full" lines="none">
-            <IonIcon slot="start" icon={Search} className="text-[#8e8e93]" />
+            <div slot="start">
+              <Search className="w-5 h-5 text-[#8e8e93]" />
+            </div>
             <IonLabel className="text-[#8e8e93]">Search</IonLabel>
           </IonItem>
         </div>
@@ -210,11 +231,15 @@ const CreatePage: React.FC = () => {
           </IonListHeader>
           <IonItem button onClick={() => triggerClick()}>
             <IonLabel>Light Impact (Tap)</IonLabel>
-            <IonIcon slot="end" icon={Vibrator} />
+            <div slot="end">
+              <Waves className="w-5 h-5" />
+            </div>
           </IonItem>
           <IonItem button onClick={() => triggerToggle()}>
             <IonLabel>Medium Impact (Toggle)</IonLabel>
-            <IonIcon slot="end" icon={Vibrator} />
+            <div slot="end">
+              <Waves className="w-5 h-5" />
+            </div>
           </IonItem>
 
           <IonListHeader className="mt-4">
@@ -222,15 +247,21 @@ const CreatePage: React.FC = () => {
           </IonListHeader>
           <IonItem button onClick={() => triggerSuccess()}>
             <IonLabel>Success Vibration</IonLabel>
-            <IonIcon slot="end" icon={Vibrator} className="text-[#34c759]" />
+            <div slot="end">
+              <Waves className="w-5 h-5 text-[#34c759]" />
+            </div>
           </IonItem>
           <IonItem button onClick={() => triggerWarning()}>
             <IonLabel>Warning Vibration</IonLabel>
-            <IonIcon slot="end" icon={Vibrator} className="text-[#ff9500]" />
+            <div slot="end">
+              <Waves className="w-5 h-5 text-[#ff9500]" />
+            </div>
           </IonItem>
           <IonItem button onClick={() => triggerError()}>
             <IonLabel>Error Vibration</IonLabel>
-            <IonIcon slot="end" icon={Vibrator} className="text-[#ff3b30]" />
+            <div slot="end">
+              <Waves className="w-5 h-5 text-[#ff3b30]" />
+            </div>
           </IonItem>
         </IonList>
 
@@ -299,25 +330,35 @@ const App: React.FC = () => {
               <Redirect to="/home" />
             </Route>
           </IonRouterOutlet>
-          <IonTabBar slot="bottom" className="pb-safe">
+          <IonTabBar slot="bottom" className="ios-safe-bottom">
             <IonTabButton tab="home" href="/home">
-              <IonIcon icon={Home} />
+              <div slot="icon">
+                <Home className="w-6 h-6" />
+              </div>
               <IonLabel>Home</IonLabel>
             </IonTabButton>
             <IonTabButton tab="search" href="/search">
-              <IonIcon icon={Search} />
+              <div slot="icon">
+                <Search className="w-6 h-6" />
+              </div>
               <IonLabel>Discover</IonLabel>
             </IonTabButton>
             <IonTabButton tab="create" href="/create">
-              <IonIcon icon={Plus} />
+              <div slot="icon">
+                <Plus className="w-6 h-6" />
+              </div>
               <IonLabel>Post</IonLabel>
             </IonTabButton>
             <IonTabButton tab="notifications" href="/notifications">
-              <IonIcon icon={Heart} />
+              <div slot="icon">
+                <Heart className="w-6 h-6" />
+              </div>
               <IonLabel>Activity</IonLabel>
             </IonTabButton>
             <IonTabButton tab="profile" href="/profile">
-              <IonIcon icon={User} />
+              <div slot="icon">
+                <User className="w-6 h-6" />
+              </div>
               <IonLabel>Profile</IonLabel>
             </IonTabButton>
           </IonTabBar>

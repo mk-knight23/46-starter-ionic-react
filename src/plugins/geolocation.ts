@@ -67,7 +67,11 @@ export class GeolocationPlugin {
         const watchId = await Geolocation.watchPosition({
           ...this.defaultOptions,
           ...options,
-        }, callback);
+        }, (positionOrNull) => {
+          if (positionOrNull) {
+            callback(positionOrNull);
+          }
+        });
         return watchId;
       } else {
         // Web fallback
