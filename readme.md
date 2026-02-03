@@ -253,8 +253,9 @@ Kazi Musharraf
 
 ## Live Deployment
 
-- **GitHub Pages**: [https://mk-knight23.github.io/46-starter-ionic-react/](https://mk-knight23.github.io/46-starter-ionic-react/)
-- **Status**: 🟢 Live
+- **Vercel**: https://46-starter-ionic-react.vercel.app ✓
+- **Cloudflare Pages**: https://46-starter-ionic-react.pages.dev ✓
+- **GitHub Pages**: https://mk-knight23.github.io/46-starter-ionic-react/ *(enable in repo settings)*
 - **Version**: 2.1.0
 
 ## Contributing
