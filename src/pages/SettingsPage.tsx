@@ -22,19 +22,19 @@ import {
   IonSegmentButton
 } from '@ionic/react';
 import {
-  moon,
-  sunny,
-  save,
-  notifications,
-  camera,
-  map,
-  refresh,
-  cloud,
-  shield,
-  bell,
-  cog,
-  colorPalette,
-  globe
+  Moon,
+  Sun,
+  Save,
+  Bell,
+  Camera,
+  Map,
+  RefreshCw,
+  Cloud,
+  Shield,
+  Bell as BellIcon,
+  Cog,
+  Palette,
+  Globe
 } from 'lucide-react';
 import { useAuth } from '../services/auth';
 import { config } from '../config/app.config';
@@ -254,7 +254,7 @@ const SettingsPage: React.FC = () => {
           {/* Theme Settings */}
           <IonListHeader>
             <IonLabel>
-              <IonIcon icon={colorPalette} className="mr-2" />
+              <Palette className="inline mr-2" />
               Appearance
             </IonLabel>
           </IonListHeader>
@@ -266,15 +266,15 @@ const SettingsPage: React.FC = () => {
               onIonChange={(e) => handleThemeChange(e.detail.value as 'light' | 'dark' | 'system')}
             >
               <IonSegmentButton value="light">
-                <IonIcon icon={sunny} />
+                <Sun />
                 <IonLabel>Light</IonLabel>
               </IonSegmentButton>
               <IonSegmentButton value="dark">
-                <IonIcon icon={moon} />
+                <Moon />
                 <IonLabel>Dark</IonLabel>
               </IonSegmentButton>
               <IonSegmentButton value="system">
-                <IonIcon icon={globe} />
+                <Globe />
                 <IonLabel>System</IonLabel>
               </IonSegmentButton>
             </IonSegment>
@@ -283,7 +283,7 @@ const SettingsPage: React.FC = () => {
           {/* Notification Settings */}
           <IonListHeader>
             <IonLabel>
-              <IonIcon icon={bell} className="mr-2" />
+              <BellIcon className="inline mr-2" />
               Notifications
             </IonLabel>
           </IonListHeader>
@@ -323,7 +323,7 @@ const SettingsPage: React.FC = () => {
           {/* Privacy Settings */}
           <IonListHeader>
             <IonLabel>
-              <IonIcon icon={shield} className="mr-2" />
+              <Shield className="inline mr-2" />
               Privacy
             </IonLabel>
           </IonListHeader>
@@ -357,7 +357,7 @@ const SettingsPage: React.FC = () => {
           {/* Preferences */}
           <IonListHeader>
             <IonLabel>
-              <IonIcon icon={cog} className="mr-2" />
+              <Cog className="inline mr-2" />
               Preferences
             </IonLabel>
           </IonListHeader>
@@ -406,7 +406,7 @@ const SettingsPage: React.FC = () => {
           {/* Sync Settings */}
           <IonListHeader>
             <IonLabel>
-              <IonIcon icon={cloud} className="mr-2" />
+              <Cloud className="inline mr-2" />
               Sync
             </IonLabel>
           </IonListHeader>
@@ -440,19 +440,19 @@ const SettingsPage: React.FC = () => {
           </IonListHeader>
 
           <IonItem button onClick={handleChangePassword}>
-            <IonIcon icon={save} className="mr-2" />
+            <Save className="inline mr-2" />
             <IonLabel>Change Password</IonLabel>
           </IonItem>
 
           <IonItem button onClick={handleDeleteAccount} color="danger">
-            <IonIcon icon={refresh} className="mr-2" />
+            <RefreshCw className="inline mr-2" />
             <IonLabel>Delete Account</IonLabel>
           </IonItem>
         </IonList>
 
         <div className="p-4">
           <IonButton expand="block" onClick={handleSaveSettings}>
-            <IonIcon icon={save} className="mr-2" />
+            <Save className="inline mr-2" />
             Save Settings
           </IonButton>
         </div>

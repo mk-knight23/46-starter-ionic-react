@@ -36,6 +36,7 @@ interface AuthContextState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  updateProfile: (data: Partial<User>) => Promise<User>;
 }
 
 /**
@@ -46,7 +47,7 @@ export class AuthService {
   private static instance: AuthService;
   private token: string | null = null;
   private user: User | null = null;
-  private tokenRefreshTimer: NodeJS.Timeout | null = null;
+  private tokenRefreshTimer: ReturnType<typeof setTimeout> | null = null;
 
   private constructor() {
     // Load token from localStorage on initialization
@@ -327,10 +328,10 @@ export class AuthService {
    */
   private async createUserSession(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
     // Mock user creation - in a real app, this would make an API call
-    const user = await databaseService.queryOne(
+    let user = await databaseService.queryOne(
       'SELECT * FROM users WHERE email = ?',
       [credentials.email]
-    ) as User;
+    ) as User | null;
 
     if (!user) {
       // Create mock user for demo
@@ -342,12 +343,10 @@ export class AuthService {
         updated_at: new Date().toISOString()
       });
 
-      const newUser = await databaseService.queryOne(
+      user = await databaseService.queryOne(
         'SELECT * FROM users WHERE id = ?',
         [userId]
       ) as User;
-
-      user = newUser;
     }
 
     // Create session token (JWT-like)
@@ -411,7 +410,8 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 const AuthContext = createContext<AuthContextState>({
   user: null,
   isLoading: true,
-  isAuthenticated: false
+  isAuthenticated: false,
+  updateProfile: async () => ({ id: 0, email: '', username: '' } as User)
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -424,7 +424,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, setState] = useState<AuthContextState>({
     user: null,
     isLoading: true,
-    isAuthenticated: false
+    isAuthenticated: false,
+    updateProfile: async () => ({ id: 0, email: '', username: '' } as User)
+  });
+
+  const createAuthState = (user: User | null, isAuthenticated: boolean): AuthContextState => ({
+    user,
+    isLoading: false,
+    isAuthenticated,
+    updateProfile: async (data: Partial<User>) => {
+      const auth = AuthService.getInstance();
+      return await auth.updateProfile(data);
+    }
   });
 
   useEffect(() => {
@@ -434,33 +445,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (authService.isAuthenticated()) {
           const user = authService.getCurrentUser();
-          setState({
-            user,
-            isLoading: false,
-            isAuthenticated: true
-          });
+          setState(createAuthState(user, true));
         } else {
-          setState({
-            user: null,
-            isLoading: false,
-            isAuthenticated: false
-          });
+          setState(createAuthState(null, false));
         }
       } catch (error) {
         console.error('Auth initialization failed:', error);
-        setState({
-          user: null,
-          isLoading: false,
-          isAuthenticated: false
-        });
+        setState(createAuthState(null, false));
       }
     };
 
     initializeAuth();
   }, []);
 
+  const contextValue: AuthContextState = {
+    user: state.user,
+    isLoading: state.isLoading,
+    isAuthenticated: state.isAuthenticated,
+    updateProfile: state.updateProfile
+  };
+
   return (
-    <AuthContext.Provider value={state}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

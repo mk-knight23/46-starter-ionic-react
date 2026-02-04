@@ -28,7 +28,7 @@ interface SyncConfig {
 export class SyncService {
   private static instance: SyncService;
   private isOnline: boolean = true;
-  private syncTimer: NodeJS.Timeout | null = null;
+  private syncTimer: ReturnType<typeof setTimeout> | null = null;
   private isSyncing: boolean = false;
   private config: SyncConfig = {
     autoSync: true,
@@ -207,7 +207,8 @@ export class SyncService {
           await this.processOperation(op);
           await this.markOperationSynced(op.id);
         } catch (error) {
-          await this.markOperationFailed(op.id, error.message);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          await this.markOperationFailed(op.id, errorMessage);
           console.error(`Failed to process operation ${op.id}:`, error);
         }
       }
