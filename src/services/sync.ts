@@ -55,7 +55,6 @@ export class SyncService {
   private initializeNetworkListener(): void {
     Network.addListener('networkStatusChange', (status) => {
       this.isOnline = status.connected;
-      console.log('Network status changed:', status);
 
       if (this.isOnline && this.config.autoSync) {
         this.triggerSync();
@@ -134,7 +133,6 @@ export class SyncService {
     }
 
     this.isSyncing = true;
-    console.log('Starting sync process...');
 
     try {
       await this.syncPendingOperations();
@@ -195,11 +193,8 @@ export class SyncService {
       ) as SyncOperation[];
 
       if (operations.length === 0) {
-        console.log('No pending operations to sync');
         return;
       }
-
-      console.log(`Syncing ${operations.length} operations...`);
 
       // Process each operation
       for (const op of operations) {
@@ -224,7 +219,6 @@ export class SyncService {
   private async processOperation(op: SyncOperation): Promise<void> {
     // This would normally make API calls to your backend
     // For demo purposes, we'll simulate the sync process
-    console.log(`Processing ${op.operation} operation for ${op.dataType} ${op.dataId}`);
 
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -233,7 +227,6 @@ export class SyncService {
     // 1. Send the operation to your backend API
     // 2. Handle conflict resolution
     // 3. Update local data if needed
-    console.log('Operation processed successfully');
   }
 
   /**
@@ -306,8 +299,6 @@ export class SyncService {
         'DELETE FROM sync_queue WHERE status = ? AND created_at < ?',
         ['synced', cutoffDate.toISOString()]
       );
-
-      console.log(`Cleared old sync operations older than ${days} days`);
     } catch (error) {
       console.error('Failed to clear old operations:', error);
     }
@@ -322,8 +313,6 @@ export class SyncService {
         'SELECT * FROM sync_queue WHERE status = ?',
         ['failed']
       ) as SyncOperation[];
-
-      console.log(`Retrying ${failedOps.length} failed operations...`);
 
       for (const op of failedOps) {
         try {

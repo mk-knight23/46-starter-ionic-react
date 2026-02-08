@@ -227,7 +227,6 @@ export class AuthService {
     }
 
     // In a real app, you would hash the password and update it
-    console.log('Password change requested for user:', this.user.id);
   }
 
   /**

@@ -64,7 +64,6 @@ export class DatabaseService {
       // Use mock implementation for web
       this.db = new MockDatabaseImpl();
       this.initialized = true;
-      console.log('Database initialized with mock implementation');
     } catch (error) {
       console.error('Failed to initialize database:', error);
       throw new Error('Database initialization failed');

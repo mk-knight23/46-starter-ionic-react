@@ -7,37 +7,22 @@ import {
   IonToolbar,
   IonList,
   IonListHeader,
-  IonItem,
   IonLabel,
-  IonToggle,
-  IonSelect,
-  IonSelectOption,
-  IonInput,
   IonButton,
-  IonAlert,
   IonToast,
   IonLoading,
-  IonIcon,
-  IonSegment,
-  IonSegmentButton
 } from '@ionic/react';
-import {
-  Moon,
-  Sun,
-  Save,
-  Bell,
-  Camera,
-  Map,
-  RefreshCw,
-  Cloud,
-  Shield,
-  Bell as BellIcon,
-  Cog,
-  Palette,
-  Globe
-} from 'lucide-react';
+import { Save, Bell as BellIcon, Palette, Cloud } from 'lucide-react';
 import { useAuth } from '../services/auth';
 import { config } from '../config/app.config';
+import {
+  ThemeSettings,
+  NotificationSettings,
+  PrivacySettings,
+  PreferencesSettings,
+  SyncSettings,
+  AccountSettings,
+} from '../components/settings';
 
 interface Settings {
   theme: 'light' | 'dark' | 'system';
@@ -94,10 +79,7 @@ const SettingsPage: React.FC = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showSaveAlert, setShowSaveAlert] = useState(false);
   const [showChangesSaved, setShowChangesSaved] = useState(false);
-  const [showPasswordAlert, setShowPasswordAlert] = useState(false);
-  const [showDeleteAccountAlert, setShowDeleteAccountAlert] = useState(false);
 
   // Load settings from localStorage on component mount
   useEffect(() => {
@@ -168,6 +150,15 @@ const SettingsPage: React.FC = () => {
     });
   };
 
+  const handleVisibilityChange = (value: 'public' | 'private') => {
+    saveSettings({
+      privacy: {
+        ...settings.privacy,
+        accountVisibility: value
+      }
+    });
+  };
+
   const handlePreferenceChange = (key: keyof Settings['preferences'], value: any) => {
     saveSettings({
       preferences: {
@@ -178,12 +169,13 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleSyncChange = (key: keyof Settings['sync']) => {
-    saveSettings({
-      sync: {
-        ...settings.sync,
-        [key]: !settings.sync[key]
-      }
-    });
+    const updatedSync = { ...settings.sync };
+    if (key === 'lastSync') {
+      updatedSync[key] = new Date().toISOString();
+    } else {
+      updatedSync[key] = !settings.sync[key];
+    }
+    saveSettings({ sync: updatedSync });
   };
 
   const handleSaveSettings = async () => {
@@ -192,7 +184,6 @@ const SettingsPage: React.FC = () => {
       // In a real app, this would save to your backend
       await new Promise(resolve => setTimeout(resolve, 1000));
       setShowChangesSaved(true);
-      setShowSaveAlert(true);
     } catch (error) {
       console.error('Failed to save settings:', error);
     } finally {
@@ -200,20 +191,12 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleChangePassword = () => {
-    setShowPasswordAlert(true);
-  };
-
-  const handleDeleteAccount = () => {
-    setShowDeleteAccountAlert(true);
-  };
-
-  const handlePasswordSubmit = async (currentPassword: string, newPassword: string) => {
+  const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
     setIsLoading(true);
     try {
       // In a real app, this would call your auth service
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setShowPasswordAlert(false);
+      setShowChangesSaved(true);
     } catch (error) {
       console.error('Password change failed:', error);
     } finally {
@@ -221,12 +204,12 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleDeleteAccountSubmit = async () => {
+  const handleDeleteAccount = async () => {
     setIsLoading(true);
     try {
       // In a real app, this would call your auth service
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setShowDeleteAccountAlert(false);
+      // In a real app, you would redirect to login page
     } catch (error) {
       console.error('Account deletion failed:', error);
     } finally {
@@ -258,27 +241,7 @@ const SettingsPage: React.FC = () => {
               Appearance
             </IonLabel>
           </IonListHeader>
-
-          <IonItem>
-            <IonLabel>Theme</IonLabel>
-            <IonSegment
-              value={settings.theme}
-              onIonChange={(e) => handleThemeChange(e.detail.value as 'light' | 'dark' | 'system')}
-            >
-              <IonSegmentButton value="light">
-                <Sun />
-                <IonLabel>Light</IonLabel>
-              </IonSegmentButton>
-              <IonSegmentButton value="dark">
-                <Moon />
-                <IonLabel>Dark</IonLabel>
-              </IonSegmentButton>
-              <IonSegmentButton value="system">
-                <Globe />
-                <IonLabel>System</IonLabel>
-              </IonSegmentButton>
-            </IonSegment>
-          </IonItem>
+          <ThemeSettings theme={settings.theme} onThemeChange={handleThemeChange} />
 
           {/* Notification Settings */}
           <IonListHeader>
@@ -287,121 +250,29 @@ const SettingsPage: React.FC = () => {
               Notifications
             </IonLabel>
           </IonListHeader>
-
-          <IonItem>
-            <IonLabel>Likes on my posts</IonLabel>
-            <IonToggle
-              checked={settings.notifications.likes}
-              onIonChange={() => handleNotificationChange('likes')}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>Comments on my posts</IonLabel>
-            <IonToggle
-              checked={settings.notifications.comments}
-              onIonChange={() => handleNotificationChange('comments')}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>New followers</IonLabel>
-            <IonToggle
-              checked={settings.notifications.follows}
-              onIonChange={() => handleNotificationChange('follows')}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>App updates</IonLabel>
-            <IonToggle
-              checked={settings.notifications.updates}
-              onIonChange={() => handleNotificationChange('updates')}
-            />
-          </IonItem>
+          <NotificationSettings
+            notifications={settings.notifications}
+            onNotificationChange={handleNotificationChange}
+          />
 
           {/* Privacy Settings */}
           <IonListHeader>
-            <IonLabel>
-              <Shield className="inline mr-2" />
-              Privacy
-            </IonLabel>
+            <IonLabel>Privacy</IonLabel>
           </IonListHeader>
+          <PrivacySettings
+            privacy={settings.privacy}
+            onPrivacyChange={handlePrivacyChange}
+            onVisibilityChange={handleVisibilityChange}
+          />
 
-          <IonItem>
-            <IonLabel>Account visibility</IonLabel>
-            <IonSelect
-              value={settings.privacy.accountVisibility}
-              onIonChange={(e) =>
-                saveSettings({
-                  privacy: {
-                    ...settings.privacy,
-                    accountVisibility: e.detail.value as 'public' | 'private'
-                  }
-                })
-              }
-            >
-              <IonSelectOption value="public">Public</IonSelectOption>
-              <IonSelectOption value="private">Private</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>Show activity status</IonLabel>
-            <IonToggle
-              checked={settings.privacy.showActivity}
-              onIonChange={() => handlePrivacyChange('showActivity')}
-            />
-          </IonItem>
-
-          {/* Preferences */}
+          {/* Preferences Settings */}
           <IonListHeader>
-            <IonLabel>
-              <Cog className="inline mr-2" />
-              Preferences
-            </IonLabel>
+            <IonLabel>Preferences</IonLabel>
           </IonListHeader>
-
-          <IonItem>
-            <IonLabel>Language</IonLabel>
-            <IonSelect
-              value={settings.preferences.language}
-              onIonChange={(e) => handlePreferenceChange('language', e.detail.value)}
-            >
-              <IonSelectOption value="en">English</IonSelectOption>
-              <IonSelectOption value="es">Spanish</IonSelectOption>
-              <IonSelectOption value="fr">French</IonSelectOption>
-              <IonSelectOption value="de">German</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>Auto-save drafts</IonLabel>
-            <IonToggle
-              checked={settings.preferences.autoSave}
-              onIonChange={() => handlePreferenceChange('autoSave', !settings.preferences.autoSave)}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>Offline mode</IonLabel>
-            <IonToggle
-              checked={settings.preferences.offlineMode}
-              onIonChange={() => handlePreferenceChange('offlineMode', !settings.preferences.offlineMode)}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>Data usage</IonLabel>
-            <IonSelect
-              value={settings.preferences.dataUsage}
-              onIonChange={(e) => handlePreferenceChange('dataUsage', e.detail.value)}
-            >
-              <IonSelectOption value="low">Low</IonSelectOption>
-              <IonSelectOption value="normal">Normal</IonSelectOption>
-              <IonSelectOption value="high">High</IonSelectOption>
-            </IonSelect>
-          </IonItem>
+          <PreferencesSettings
+            preferences={settings.preferences}
+            onPreferenceChange={handlePreferenceChange}
+          />
 
           {/* Sync Settings */}
           <IonListHeader>
@@ -410,44 +281,17 @@ const SettingsPage: React.FC = () => {
               Sync
             </IonLabel>
           </IonListHeader>
-
-          <IonItem>
-            <IonLabel>Auto-sync when online</IonLabel>
-            <IonToggle
-              checked={settings.sync.autoSync}
-              onIonChange={() => handleSyncChange('autoSync')}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>WiFi only</IonLabel>
-            <IonToggle
-              checked={settings.sync.wifiOnly}
-              onIonChange={() => handleSyncChange('wifiOnly')}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel>Last synced</IonLabel>
-            <IonLabel slot="end">
-              {new Date(settings.sync.lastSync).toLocaleString()}
-            </IonLabel>
-          </IonItem>
+          <SyncSettings sync={settings.sync} onSyncChange={handleSyncChange} />
 
           {/* Account Actions */}
           <IonListHeader>
             <IonLabel>Account</IonLabel>
           </IonListHeader>
-
-          <IonItem button onClick={handleChangePassword}>
-            <Save className="inline mr-2" />
-            <IonLabel>Change Password</IonLabel>
-          </IonItem>
-
-          <IonItem button onClick={handleDeleteAccount} color="danger">
-            <RefreshCw className="inline mr-2" />
-            <IonLabel>Delete Account</IonLabel>
-          </IonItem>
+          <AccountSettings
+            isLoading={isLoading}
+            onPasswordChange={handlePasswordChange}
+            onDeleteAccount={handleDeleteAccount}
+          />
         </IonList>
 
         <div className="p-4">
@@ -465,50 +309,6 @@ const SettingsPage: React.FC = () => {
         message="Settings saved successfully!"
         duration={3000}
         position="bottom"
-      />
-
-      {/* Password Change Alert */}
-      <IonAlert
-        isOpen={showPasswordAlert}
-        header="Change Password"
-        inputs={[
-          { name: 'current', type: 'password', placeholder: 'Current Password' },
-          { name: 'new', type: 'password', placeholder: 'New Password' },
-          { name: 'confirm', type: 'password', placeholder: 'Confirm New Password' }
-        ]}
-        buttons={[
-          {
-            text: 'Cancel',
-            role: 'cancel'
-          },
-          {
-            text: 'Change Password',
-            handler: (data: any) => {
-              if (data.new === data.confirm) {
-                handlePasswordSubmit(data.current, data.new);
-              }
-              return false;
-            }
-          }
-        ]}
-      />
-
-      {/* Delete Account Alert */}
-      <IonAlert
-        isOpen={showDeleteAccountAlert}
-        header="Delete Account"
-        message="Are you sure you want to delete your account? This action cannot be undone."
-        buttons={[
-          {
-            text: 'Cancel',
-            role: 'cancel'
-          },
-          {
-            text: 'Delete Account',
-            role: 'destructive',
-            handler: () => handleDeleteAccountSubmit()
-          }
-        ]}
       />
     </IonPage>
   );
