@@ -1,0 +1,28 @@
+# GitHub Pages Configuration
+title: Ionic React Starter
+description: Ionic React Starter - Part of the 60-Repo Evolution Project
+theme: jekyll-theme-cayman
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Plugins
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Exclude files
+exclude:
+  - node_modules
+  - package.json
+  - package-lock.json
+  - README.md
+  - LICENSE
+
+# Social links
+github:
+  repository_url: https://github.com/mk-knight23/46-starter-ionic-react
+
+# Analytics
+google_analytics: # Add your GA tracking ID
